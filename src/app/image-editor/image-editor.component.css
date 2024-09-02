@@ -1,0 +1,129 @@
+/* src/app/image-editor/image-editor.component.css */
+
+/* Style général de la page */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+
+}
+
+.page
+{
+  height: 100vh;
+  background: rgb(2,0,36);
+  background: linear-gradient(260deg, rgba(2,0,36,1) 0%, rgba(134,134,240,1) 0%, rgba(155,238,255,1) 99%);
+  padding-top: 10em;
+}
+
+/* Conteneur principal pour centrer le contenu */
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+  background: ghostwhite;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Style des éléments de formulaire */
+input[type="file"] {
+  display: block;
+  margin: 0 auto 20px;
+  padding: 10px 0;
+  border: none;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  width: 80%;
+}
+
+input[type="file"]::file-selector-button {
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  margin: 0 25px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Style du bouton de téléchargement */
+button {
+  display: block;
+  margin: 0 auto;
+  padding: 12px 24px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #1500ff;
+}
+
+/* Style pour l'indicateur de progression */
+div[ngIf] {
+  text-align: center;
+  margin-top: 20px;
+}
+
+p {
+  font-size: 18px;
+  color: #333;
+}
+
+/* Style du canvas caché */
+canvas {
+  display: none;
+}
+
+.logo-selection
+{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 50%;
+  margin: auto;
+  margin-bottom: 1em;
+}
+
+
+
+button.selected {
+  background-color: #a1bfff; /* Couleur de fond lorsque sélectionné */
+  color: #fff; /* Couleur du texte lorsque sélectionné */
+  border: 1px solid #a1bfff; /* Bordure colorée lorsque sélectionné */
+  font-weight: bold; /* Texte en gras lorsque sélectionné */
+}
+
+.progress
+{
+  display: flex;
+  justify-content: center;
+}
+
+/* Responsiveness */
+@media (max-width: 600px) {
+  .container {
+    padding: 15px;
+  }
+
+  input[type="file"] {
+    padding: 8px;
+  }
+
+  button {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+
+  p {
+    font-size: 16px;
+  }
+}

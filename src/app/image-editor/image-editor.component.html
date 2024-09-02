@@ -1,0 +1,30 @@
+<!-- src/app/image-editor/image-editor.component.html -->
+<div class="page">
+  <div class="container">
+    <input type="file" (change)="onFilesChange($event)" multiple />
+
+    <!-- Boutons pour sélectionner le logo -->
+    <div class="logo-selection">
+      <button
+        (click)="selectLogo('blanc')"
+        [ngClass]="{ 'selected': selectedLogo === 'blanc' }"
+      >
+        Logo Blanc
+      </button>
+      <button
+        (click)="selectLogo('noir')"
+        [ngClass]="{ 'selected': selectedLogo === 'noir' }"
+      >
+        Logo Noir
+      </button>
+    </div>
+
+    <button (click)="downloadImages()">Télécharger les images</button>
+    <canvas #canvas></canvas>
+
+    <!-- Affichage de la progression -->
+    <div *ngIf="loading" class="progress">
+      <p>Progression: {{progress}} sur {{totalImages}}</p>
+    </div>
+  </div>
+</div>
