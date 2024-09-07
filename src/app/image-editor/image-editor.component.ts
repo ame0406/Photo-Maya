@@ -12,7 +12,8 @@ export class ImageEditorComponent implements AfterViewInit {
   private logo!: HTMLImageElement;
   private files: File[] = [];
   private images: HTMLImageElement[] = [];
-  private logoSize = 375; // Taille du logo
+  private logoSizeVertical = 400; // Taille du logo pour les images verticales
+  private logoSizeHorizontal = 300; // Taille du logo pour les images horizontales
   selectedLogo: 'blanc' | 'noir' | null = null;
   loading = false;
   progress = 0;
@@ -122,16 +123,17 @@ export class ImageEditorComponent implements AfterViewInit {
       // Dessiner l'image originale sur le canvas temporaire
       tempCtx.drawImage(image, 0, 0);
 
-      // Calculer la taille du logo tout en conservant ses proportions
+      // Déterminer la taille du logo en fonction de l'orientation de l'image
+      const logoSize = image.width > image.height ? this.logoSizeHorizontal : this.logoSizeVertical;
       const logoRatio = this.logo.width / this.logo.height;
       const imageRatio = image.width / image.height;
 
       let logoWidth, logoHeight;
-      if (this.logoSize / logoRatio > image.height) {
+      if (logoSize / logoRatio > image.height) {
         logoHeight = image.height;
         logoWidth = logoHeight * logoRatio;
       } else {
-        logoWidth = this.logoSize;
+        logoWidth = logoSize;
         logoHeight = logoWidth / logoRatio;
       }
 
@@ -151,5 +153,4 @@ export class ImageEditorComponent implements AfterViewInit {
       }, 'image/png');
     });
   }
-
 }
