@@ -84,28 +84,28 @@ export class ImageEditorComponent implements AfterViewInit {
       console.error('Aucune image chargée.');
       return;
     }
-  
+
     if (!this.logo.complete) {
       console.error('Logo non chargé.');
       return;
     }
-  
+
     this.loading = true;
     const zip = new JSZip();
-    const chunkSize = 90; // Nombre d'images à traiter simultanément
-  
+
     try {
       this.progress = 0;
 
       // Traitement par lots des images
       const promises = this.images.map((image, index) => {
-        return this.addImageToZip(zip, image, `image_${index + 1}.png`, index + 1).then(() => {
+        return this.addImageToZip(zip, image, `image_${index + 1}.png`).then(() => {
           this.progress++;
           console.log(`Progression: ${this.progress} sur ${this.totalImages}`);
         });
       });
 
-      await Promise.all(promises); // Attendre que toutes les images soient traitées
+      // Attendre que toutes les promesses soient résolues
+      await Promise.all(promises);
 
       const content = await zip.generateAsync({ type: 'blob' });
       console.log('ZIP généré avec succès');
@@ -114,7 +114,7 @@ export class ImageEditorComponent implements AfterViewInit {
       a.download = 'images_with_logo.zip';
       a.click();
       URL.revokeObjectURL(a.href); // Nettoyer l'URL
-  
+
     } catch (err) {
       console.error('Erreur lors de la génération du ZIP:', err);
     } finally {
@@ -122,8 +122,7 @@ export class ImageEditorComponent implements AfterViewInit {
     }
   }
 
-
-  addImageToZip(zip: JSZip, image: HTMLImageElement, filename: string, current: number): Promise<void> {
+  addImageToZip(zip: JSZip, image: HTMLImageElement, filename: string): Promise<void> {
     return new Promise((resolve) => {
       const tempCanvas = document.createElement('canvas');
       const tempCtx = tempCanvas.getContext('2d')!;
@@ -136,7 +135,6 @@ export class ImageEditorComponent implements AfterViewInit {
       // Déterminer la taille du logo en fonction de l'orientation de l'image
       const logoSize = image.width > image.height ? this.logoSizeHorizontal : this.logoSizeVertical;
       const logoRatio = this.logo.width / this.logo.height;
-      const imageRatio = image.width / image.height;
 
       let logoWidth, logoHeight;
       if (logoSize / logoRatio > image.height) {
@@ -158,10 +156,12 @@ export class ImageEditorComponent implements AfterViewInit {
       tempCanvas.toBlob(blob => {
         if (blob) {
           zip.file(filename, blob);
+        } else {
+          console.error(`Erreur lors de la conversion de l'image ${filename} en Blob`);
         }
         resolve();
-      }, 'image/jpeg', 1.00); // 0.7 pour 70% de qualité      
-
+      }, 'image/jpeg', 1.00); // 0.7 pour 70% de qualité
     });
   }
+
 }
