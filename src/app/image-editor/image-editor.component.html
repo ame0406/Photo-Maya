@@ -1,7 +1,7 @@
 <!-- src/app/image-editor/image-editor.component.html -->
 <div class="page">
   <div class="container">
-    <input type="file" (change)="onFilesChange($event)" multiple />
+    <input type="file" (change)="onFilesChange($event)" multiple>
 
     <!-- Boutons pour sélectionner le logo -->
     <div class="logo-selection">
@@ -26,5 +26,11 @@
     <div *ngIf="loading" class="progress">
       <p>Progression: {{progress}} sur {{totalImages}}</p>
     </div>
+  </div>
+
+    <!-- Ajout des logos en bas de la progression -->
+  <div class="logos">
+    <img *ngIf="selectedLogo === 'blanc'" src="assets/logo_blanc.png" alt="Logo Blanc" />
+    <img *ngIf="selectedLogo === 'noir'" src="assets/logo_noir.png" alt="Logo Noir" />
   </div>
 </div>

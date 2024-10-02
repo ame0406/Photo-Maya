@@ -3,7 +3,7 @@
 /* Style général de la page */
 body {
   font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
+  background-color: #ffd000;
   margin: 0;
   padding: 20px;
 
@@ -12,8 +12,8 @@ body {
 .page
 {
   height: 100vh;
-  background: rgb(2,0,36);
-  background: linear-gradient(260deg, rgba(2,0,36,1) 0%, rgba(134,134,240,1) 0%, rgba(155,238,255,1) 99%);
+  background: rgb(18, 1, 1);
+  background: linear-gradient(260deg, rgb(229, 189, 10) 0%, rgb(229, 189, 10) 0%, rgb(229, 189, 10) 99%);
   padding-top: 10em;
 }
 
@@ -22,7 +22,7 @@ body {
   max-width: 800px;
   margin: auto;
   padding: 20px;
-  background: ghostwhite;
+  background: rgb(255, 255, 255);
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -34,15 +34,15 @@ input[type="file"] {
   padding: 10px 0;
   border: none;
   border-radius: 4px;
-  background-color: #f9f9f9;
+  background-color: #ffd000;
   cursor: pointer;
   width: 80%;
 }
 
 input[type="file"]::file-selector-button {
   border: none;
-  background-color: #007bff;
-  color: #fff;
+  background-color: #ffd000;
+  color: #000000;
   padding: 10px 20px;
   margin: 0 25px;
   border-radius: 4px;
@@ -55,8 +55,8 @@ button {
   margin: 0 auto;
   padding: 12px 24px;
   font-size: 16px;
-  color: #fff;
-  background-color: #007bff;
+  color: #0b0b0b;
+  background-color: #ffd000;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -64,7 +64,7 @@ button {
 }
 
 button:hover {
-  background-color: #1500ff;
+  background-color: #ffd000;
 }
 
 /* Style pour l'indicateur de progression */
@@ -75,7 +75,7 @@ div[ngIf] {
 
 p {
   font-size: 18px;
-  color: #333;
+  color: #000000;
 }
 
 /* Style du canvas caché */
@@ -96,9 +96,9 @@ canvas {
 
 
 button.selected {
-  background-color: #a1bfff; /* Couleur de fond lorsque sélectionné */
-  color: #fff; /* Couleur du texte lorsque sélectionné */
-  border: 1px solid #a1bfff; /* Bordure colorée lorsque sélectionné */
+  background-color: #ffd000; /* Couleur de fond lorsque sélectionné */
+  color: #ffffff; /* Couleur du texte lorsque sélectionné */
+  border: 1px solid #ffd000; /* Bordure colorée lorsque sélectionné */
   font-weight: bold; /* Texte en gras lorsque sélectionné */
 }
 
@@ -106,6 +106,17 @@ button.selected {
 {
   display: flex;
   justify-content: center;
+}
+.logos{
+  display:flex;
+  flex-direction: row;
+  gap: 2em;
+  justify-content: center;
+}
+
+.logos img {
+  max-width: 100px; /* Ajustez la taille selon vos besoins */
+  margin-top: 10px; /* Ajoute un espacement */
 }
 
 /* Responsiveness */

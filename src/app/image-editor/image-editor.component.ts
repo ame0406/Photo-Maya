@@ -12,8 +12,10 @@ export class ImageEditorComponent implements AfterViewInit {
   private logo!: HTMLImageElement;
   private files: File[] = [];
   private images: HTMLImageElement[] = [];
-  private logoSizeVertical = 400; // Taille du logo pour les images verticales
-  private logoSizeHorizontal = 300; // Taille du logo pour les images horizontales
+  //private logoSizeVertical = 400; // Taille du logo pour les images verticales
+  //private logoSizeHorizontal = 350; // Taille du logo pour les images horizontales
+  private logoSizeVertical = 1200; // Taille du logo pour les images verticales
+  private logoSizeHorizontal = 1000; // Taille du logo pour les images horizontales
   selectedLogo: 'blanc' | 'noir' | null = null;
   loading = false;
   progress = 0;
@@ -82,30 +84,36 @@ export class ImageEditorComponent implements AfterViewInit {
       console.error('Aucune image chargée.');
       return;
     }
-
+  
     if (!this.logo.complete) {
       console.error('Logo non chargé.');
       return;
     }
-
+  
     this.loading = true;
     const zip = new JSZip();
-
+    const chunkSize = 90; // Nombre d'images à traiter simultanément
+  
     try {
       this.progress = 0;
-      for (let i = 0; i < this.images.length; i++) {
-        await this.addImageToZip(zip, this.images[i], `image_${i + 1}.png`, i + 1);
-        this.progress = i + 1;
+  
+      for (let i = 0; i < this.images.length; i += chunkSize) {
+        const chunk = this.images.slice(i, i + chunkSize);
+        await Promise.all(chunk.map((image, index) =>
+          this.addImageToZip(zip, image, `image_${i + index + 1}.jpg`, i + index + 1)
+        ));
+        this.progress += chunk.length;
         console.log(`Progression: ${this.progress} sur ${this.totalImages}`);
       }
-
+  
       const content = await zip.generateAsync({ type: 'blob' });
+      console.log('ZIP généré avec succès');
       const a = document.createElement('a');
       a.href = URL.createObjectURL(content);
       a.download = 'images_with_logo.zip';
       a.click();
       URL.revokeObjectURL(a.href); // Nettoyer l'URL
-
+  
     } catch (err) {
       console.error('Erreur lors de la génération du ZIP:', err);
     } finally {
@@ -150,7 +158,8 @@ export class ImageEditorComponent implements AfterViewInit {
           zip.file(filename, blob);
         }
         resolve();
-      }, 'image/png');
+      }, 'image/jpeg', 1.00); // 0.7 pour 70% de qualité      
+
     });
   }
 }
