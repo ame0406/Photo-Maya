@@ -1,0 +1,20 @@
+Dans le terminal écrit 
+
+ npm run start
+
+puis fait CTRL + Clique sur le lien
+
+http://localhost:4200/
+
+Sa ouvre Goolge
+
+
+
+YEAH!!!
+
+
+
+Quand tu a terminer fait CTRL + C pour l'arrêter
+Puis O (pour oui)
+
+Tu peux le fermer
