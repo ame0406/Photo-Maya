@@ -96,16 +96,17 @@ export class ImageEditorComponent implements AfterViewInit {
   
     try {
       this.progress = 0;
-  
-      for (let i = 0; i < this.images.length; i += chunkSize) {
-        const chunk = this.images.slice(i, i + chunkSize);
-        await Promise.all(chunk.map((image, index) =>
-          this.addImageToZip(zip, image, `image_${i + index + 1}.jpg`, i + index + 1)
-        ));
-        this.progress += chunk.length;
-        console.log(`Progression: ${this.progress} sur ${this.totalImages}`);
-      }
-  
+
+      // Traitement par lots des images
+      const promises = this.images.map((image, index) => {
+        return this.addImageToZip(zip, image, `image_${index + 1}.png`, index + 1).then(() => {
+          this.progress++;
+          console.log(`Progression: ${this.progress} sur ${this.totalImages}`);
+        });
+      });
+
+      await Promise.all(promises); // Attendre que toutes les images soient traitées
+
       const content = await zip.generateAsync({ type: 'blob' });
       console.log('ZIP généré avec succès');
       const a = document.createElement('a');
@@ -120,6 +121,7 @@ export class ImageEditorComponent implements AfterViewInit {
       this.loading = false;
     }
   }
+
 
   addImageToZip(zip: JSZip, image: HTMLImageElement, filename: string, current: number): Promise<void> {
     return new Promise((resolve) => {
