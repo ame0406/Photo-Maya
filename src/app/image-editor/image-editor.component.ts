@@ -14,8 +14,8 @@ export class ImageEditorComponent implements AfterViewInit {
   private logoRight!: HTMLImageElement;
   private files: File[] = [];
   private images: HTMLImageElement[] = [];
-  private logoSizeVertical = 330; // Taille du logo pour les images verticales
-  private logoSizeHorizontal = 450; // Taille du logo pour les images horizontales
+  private logoSizeVertical = 1000; // Taille du logo pour les images verticales
+  private logoSizeHorizontal = 900; // Taille du logo pour les images horizontales
   selectedLogo: 'blanc' | 'noir' | null = null;
   loading = false;
   progress = 0;
@@ -23,6 +23,11 @@ export class ImageEditorComponent implements AfterViewInit {
 
   addLogoLeft: boolean = false;
   addLogoRight: boolean = false;
+  logoLeftSizeFactor: number = 2; // Facteur d'agrandissement pour le logo gauche
+  logoRightSizeFactor: number = 1; // Facteur d'agrandissement pour le logo droit
+  logoLeftVerticalOffset: number = 500; // Décalage vertical initial pour le logo gauche
+
+
 
   constructor() {}
 
@@ -123,17 +128,23 @@ export class ImageEditorComponent implements AfterViewInit {
       const logoSize = image.width > image.height ? this.logoSizeHorizontal : this.logoSizeVertical;
 
       // Dessiner le logo central
-      this.drawLogoOnCanvas(tempCtx, this.logo, (image.width - logoSize) / 2, image.height - logoSize, logoSize);
+      const offset = 400; // Décalage vers le bas en pixels
+      this.drawLogoOnCanvas(tempCtx, this.logo, (image.width - logoSize) / 2, image.height - logoSize + offset, logoSize);
+
 
       // Dessiner le logo gauche
       if (this.addLogoLeft) {
-        this.drawLogoOnCanvas(
-          tempCtx,
-          this.logoLeft,
-          50,
-          image.height - logoSize / 2 - 50,
-          logoSize / 2
-        );
+        if (this.addLogoLeft) {
+          this.drawLogoOnCanvas(
+            tempCtx,
+            this.logoLeft,
+            50, // Position horizontale
+            image.height - (logoSize / 2) * this.logoLeftSizeFactor - 100 + this.logoLeftVerticalOffset, // Position verticale ajustée
+            (logoSize / 2) * this.logoLeftSizeFactor // Taille du logo
+          );
+        }
+
+
       }
 
       // Dessiner le logo droit
@@ -141,10 +152,11 @@ export class ImageEditorComponent implements AfterViewInit {
         this.drawLogoOnCanvas(
           tempCtx,
           this.logoRight,
-          image.width - logoSize / 2 - 50,
-          image.height - logoSize / 2 - 50,
-          logoSize / 2
+          image.width - (logoSize / 2) * this.logoRightSizeFactor - 50,
+          image.height - (logoSize / 2) * this.logoRightSizeFactor - 100,
+          (logoSize / 2) * this.logoRightSizeFactor
         );
+
       }
 
       tempCanvas.toBlob(blob => {
