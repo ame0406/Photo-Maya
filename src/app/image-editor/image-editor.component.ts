@@ -84,12 +84,12 @@ export class ImageEditorComponent implements AfterViewInit {
       console.error('Aucune image chargée.');
       return;
     }
-  
+
     if (!this.logo.complete) {
       console.error('Logo non chargé.');
       return;
     }
-  
+
     this.loading = true;
     const zip = new JSZip();
     const chunkSize = 5; // Nombre d'images à traiter simultanément
@@ -115,7 +115,7 @@ export class ImageEditorComponent implements AfterViewInit {
       a.download = 'images_with_logo.zip';
       a.click();
       URL.revokeObjectURL(a.href); // Nettoyer l'URL
-  
+
     } catch (err) {
       console.error('Erreur lors de la génération du ZIP:', err);
     } finally {
