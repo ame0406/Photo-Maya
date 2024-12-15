@@ -1,12 +1,12 @@
 /* src/app/image-editor/image-editor.component.css */
 
 /* Style général de la page */
-body {
+.body {
   font-family: Arial, sans-serif;
-  background-color: #ffd000;
+  background: linear-gradient(to bottom, #ffe988, #ffd000);
   margin: 0;
   padding: 20px;
-
+  
 }
 
 .page
@@ -115,8 +115,8 @@ button.selected {
 }
 
 .logos img {
-  max-width: 100px; /* Ajustez la taille selon vos besoins */
-  margin-top: 10px; /* Ajoute un espacement */
+  max-width: 400px; /* Ajustez la taille selon vos besoins */
+  margin-top: 20px; /* Ajoute un espacement */
 }
 
 /* Responsiveness */
