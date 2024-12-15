@@ -12,10 +12,10 @@ export class ImageEditorComponent implements AfterViewInit {
   private logo!: HTMLImageElement;
   private files: File[] = [];
   private images: HTMLImageElement[] = [];
-  //private logoSizeVertical = 475; // Taille du logo pour les images verticales
-  //private logoSizeHorizontal = 330; // Taille du logo pour les images horizontales
-  private logoSizeVertical = 1000; // Taille du logo pour les images verticales
-  private logoSizeHorizontal = 1000; // Taille du logo pour les images horizontales
+  private logoSizeVertical = 475; // Taille du logo pour les images verticales
+  private logoSizeHorizontal = 330; // Taille du logo pour les images horizontales
+  //private logoSizeVertical = 1000; // Taille du logo pour les images verticales
+  //private logoSizeHorizontal = 1000; // Taille du logo pour les images horizontales
   selectedLogo: 'blanc' | 'noir' | null = null;
   loading = false;
   progress = 0;
@@ -94,20 +94,20 @@ export class ImageEditorComponent implements AfterViewInit {
     const zip = new JSZip();
     const chunkSize = 5; // Nombre d'images à traiter simultanément
     this.progress = 0;
-  
+
     try {
       for (let i = 0; i < this.images.length; i += chunkSize) {
         const chunk = this.images.slice(i, i + chunkSize);
         const promises = chunk.map((image, index) =>
           this.addImageToZip(zip, image, `image_${i + index + 1}.jpg`, i + index + 1)
         );
-  
+
         // Attendre que le lot soit traité avant de passer au suivant
         await Promise.all(promises);
         this.progress += promises.length; // Mettre à jour la progression
         console.log(`Progression: ${this.progress} sur ${this.totalImages}`);
       }
-  
+
       const content = await zip.generateAsync({ type: 'blob' });
       console.log('ZIP généré avec succès');
       const a = document.createElement('a');
@@ -131,15 +131,15 @@ export class ImageEditorComponent implements AfterViewInit {
       const tempCtx = tempCanvas.getContext('2d')!;
       tempCanvas.width = image.width;
       tempCanvas.height = image.height;
-  
+
       // Dessiner l'image originale sur le canvas temporaire
       tempCtx.drawImage(image, 0, 0);
-  
+
       // Déterminer la taille du logo en fonction de l'orientation de l'image
       const logoSize = image.width > image.height ? this.logoSizeHorizontal : this.logoSizeVertical;
       const logoRatio = this.logo.width / this.logo.height;
       const imageRatio = image.width / image.height;
-  
+
       let logoWidth, logoHeight;
       if (logoSize / logoRatio > image.height) {
         logoHeight = image.height;
@@ -148,14 +148,14 @@ export class ImageEditorComponent implements AfterViewInit {
         logoWidth = logoSize;
         logoHeight = logoWidth / logoRatio;
       }
-  
+
       // Calculer la position du logo pour le centrer horizontalement et le placer en bas
       const logoX = (image.width - logoWidth) / 2;  // Centrer horizontalement
       const logoY = image.height - logoHeight;     // Placer en bas
-  
+
       // Dessiner le logo sur le canvas temporaire
       tempCtx.drawImage(this.logo, logoX, logoY, logoWidth, logoHeight);
-  
+
       // Convertir le canvas en Blob
       tempCanvas.toBlob(blob => {
         if (blob) {
@@ -165,6 +165,6 @@ export class ImageEditorComponent implements AfterViewInit {
           reject(new Error('Erreur lors de la conversion de l\'image en Blob'));
         }
       }, 'image/jpg', 1.00); // 100% de qualité
-    });  
-  }    
+    });
+  }
 }
