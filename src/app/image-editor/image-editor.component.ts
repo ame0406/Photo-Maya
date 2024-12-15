@@ -10,21 +10,29 @@ export class ImageEditorComponent implements AfterViewInit {
   @ViewChild('canvas', { static: true }) canvas!: ElementRef<HTMLCanvasElement>;
   private ctx!: CanvasRenderingContext2D;
   private logo!: HTMLImageElement;
+  private logoLeft!: HTMLImageElement;
+  private logoRight!: HTMLImageElement;
   private files: File[] = [];
   private images: HTMLImageElement[] = [];
-  private logoSizeVertical = 475; // Taille du logo pour les images verticales
-  private logoSizeHorizontal = 330; // Taille du logo pour les images horizontales
-  //private logoSizeVertical = 1000; // Taille du logo pour les images verticales
-  //private logoSizeHorizontal = 1000; // Taille du logo pour les images horizontales
+  private logoSizeVertical = 330; // Taille du logo pour les images verticales
+  private logoSizeHorizontal = 450; // Taille du logo pour les images horizontales
   selectedLogo: 'blanc' | 'noir' | null = null;
   loading = false;
   progress = 0;
   totalImages = 0;
 
-  constructor() { }
+  addLogoLeft: boolean = false;
+  addLogoRight: boolean = false;
+
+  constructor() {}
 
   ngAfterViewInit() {
     this.ctx = this.canvas.nativeElement.getContext('2d')!;
+    this.logoLeft = new Image();
+    this.logoLeft.src = 'assets/logo_gauche.png';
+
+    this.logoRight = new Image();
+    this.logoRight.src = 'assets/logo_droit.png';
   }
 
   onFilesChange(event: Event) {
@@ -36,11 +44,9 @@ export class ImageEditorComponent implements AfterViewInit {
       this.progress = 0;
       this.loading = false;
       const promises = this.files.map(file => this.loadImage(file));
-      Promise.all(promises).then(() => {
-        console.log('Toutes les images sont prêtes.');
-      }).catch(err => {
-        console.error('Erreur lors du chargement des images:', err);
-      });
+      Promise.all(promises)
+        .then(() => console.log('Toutes les images sont prêtes.'))
+        .catch(err => console.error('Erreur lors du chargement des images:', err));
     }
   }
 
@@ -64,57 +70,39 @@ export class ImageEditorComponent implements AfterViewInit {
   selectLogo(color: 'blanc' | 'noir') {
     this.selectedLogo = color;
     this.logo = new Image();
-    this.logo.src = `assets/logo_${color}.png`; // Chemin du logo sélectionné
+    this.logo.src = `assets/logo_${color}.png`;
 
-    // Assurez-vous que le logo est chargé avant de permettre le téléchargement
     return new Promise<void>((resolve, reject) => {
       this.logo.onload = () => {
-        console.log('Logo chargé');
+        console.log('Logo principal chargé');
         resolve();
       };
-      this.logo.onerror = (err) => {
-        console.error('Erreur lors du chargement du logo:', err);
-        reject(err);
-      };
+      this.logo.onerror = reject;
     });
   }
 
   async downloadImages() {
-    if (this.images.length === 0) {
-      console.error('Aucune image chargée.');
-      return;
-    }
-
-    if (!this.logo.complete) {
-      console.error('Logo non chargé.');
+    if (this.images.length === 0 || !this.selectedLogo) {
+      console.error('Aucune image ou logo principal non sélectionné.');
       return;
     }
 
     this.loading = true;
     const zip = new JSZip();
-    const chunkSize = 5; // Nombre d'images à traiter simultanément
     this.progress = 0;
 
     try {
-      for (let i = 0; i < this.images.length; i += chunkSize) {
-        const chunk = this.images.slice(i, i + chunkSize);
-        const promises = chunk.map((image, index) =>
-          this.addImageToZip(zip, image, `image_${i + index + 1}.jpg`, i + index + 1)
-        );
-
-        // Attendre que le lot soit traité avant de passer au suivant
-        await Promise.all(promises);
-        this.progress += promises.length; // Mettre à jour la progression
-        console.log(`Progression: ${this.progress} sur ${this.totalImages}`);
+      for (let i = 0; i < this.images.length; i++) {
+        await this.addImageToZip(zip, this.images[i], `image_${i + 1}.jpg`);
+        this.progress++;
       }
 
       const content = await zip.generateAsync({ type: 'blob' });
-      console.log('ZIP généré avec succès');
       const a = document.createElement('a');
       a.href = URL.createObjectURL(content);
-      a.download = 'images_with_logo.zip';
+      a.download = 'images_with_logos.zip';
       a.click();
-      URL.revokeObjectURL(a.href); // Nettoyer l'URL
+      URL.revokeObjectURL(a.href);
 
     } catch (err) {
       console.error('Erreur lors de la génération du ZIP:', err);
@@ -123,40 +111,42 @@ export class ImageEditorComponent implements AfterViewInit {
     }
   }
 
-
-
-  addImageToZip(zip: JSZip, image: HTMLImageElement, filename: string, current: number): Promise<void> {
+  addImageToZip(zip: JSZip, image: HTMLImageElement, filename: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const tempCanvas = document.createElement('canvas');
       const tempCtx = tempCanvas.getContext('2d')!;
       tempCanvas.width = image.width;
       tempCanvas.height = image.height;
 
-      // Dessiner l'image originale sur le canvas temporaire
       tempCtx.drawImage(image, 0, 0);
 
-      // Déterminer la taille du logo en fonction de l'orientation de l'image
       const logoSize = image.width > image.height ? this.logoSizeHorizontal : this.logoSizeVertical;
-      const logoRatio = this.logo.width / this.logo.height;
-      const imageRatio = image.width / image.height;
 
-      let logoWidth, logoHeight;
-      if (logoSize / logoRatio > image.height) {
-        logoHeight = image.height;
-        logoWidth = logoHeight * logoRatio;
-      } else {
-        logoWidth = logoSize;
-        logoHeight = logoWidth / logoRatio;
+      // Dessiner le logo central
+      this.drawLogoOnCanvas(tempCtx, this.logo, (image.width - logoSize) / 2, image.height - logoSize, logoSize);
+
+      // Dessiner le logo gauche
+      if (this.addLogoLeft) {
+        this.drawLogoOnCanvas(
+          tempCtx,
+          this.logoLeft,
+          50,
+          image.height - logoSize / 2 - 50,
+          logoSize / 2
+        );
       }
 
-      // Calculer la position du logo pour le centrer horizontalement et le placer en bas
-      const logoX = (image.width - logoWidth) / 2;  // Centrer horizontalement
-      const logoY = image.height - logoHeight;     // Placer en bas
+      // Dessiner le logo droit
+      if (this.addLogoRight) {
+        this.drawLogoOnCanvas(
+          tempCtx,
+          this.logoRight,
+          image.width - logoSize / 2 - 50,
+          image.height - logoSize / 2 - 50,
+          logoSize / 2
+        );
+      }
 
-      // Dessiner le logo sur le canvas temporaire
-      tempCtx.drawImage(this.logo, logoX, logoY, logoWidth, logoHeight);
-
-      // Convertir le canvas en Blob
       tempCanvas.toBlob(blob => {
         if (blob) {
           zip.file(filename.replace(/\.png$/, '.jpg'), blob);
@@ -164,7 +154,14 @@ export class ImageEditorComponent implements AfterViewInit {
         } else {
           reject(new Error('Erreur lors de la conversion de l\'image en Blob'));
         }
-      }, 'image/jpg', 1.00); // 100% de qualité
+      }, 'image/jpg', 1.0);
     });
+  }
+
+  private drawLogoOnCanvas(ctx: CanvasRenderingContext2D, logo: HTMLImageElement, x: number, y: number, size: number) {
+    const ratio = logo.width / logo.height;
+    const width = size;
+    const height = size / ratio;
+    ctx.drawImage(logo, x, y, width, height);
   }
 }

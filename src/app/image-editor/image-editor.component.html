@@ -1,36 +1,30 @@
-<!-- src/app/image-editor/image-editor.component.html -->
-<div class="page">
-  <div class="container">
-    <input type="file" (change)="onFilesChange($event)" multiple>
+<div class="container">
+  <input type="file" (change)="onFilesChange($event)" multiple />
 
-    <!-- Boutons pour sélectionner le logo -->
-    <div class="logo-selection">
-      <button
-        (click)="selectLogo('blanc')"
-        [ngClass]="{ 'selected': selectedLogo === 'blanc' }"
-      >
-        Logo Blanc
-      </button>
-      <button
-        (click)="selectLogo('noir')"
-        [ngClass]="{ 'selected': selectedLogo === 'noir' }"
-      >
-        Logo Noir
-      </button>
-    </div>
-
-    <button (click)="downloadImages()">Télécharger les images</button>
-    <canvas #canvas></canvas>
-
-    <!-- Affichage de la progression -->
-    <div *ngIf="loading" class="progress">
-      <p>Progression: {{progress}} sur {{totalImages}}</p>
-    </div>
+  <div class="logo-selection">
+    <button (click)="selectLogo('blanc')" [ngClass]="{ 'selected': selectedLogo === 'blanc' }">
+      Logo Blanc
+    </button>
+    <button (click)="selectLogo('noir')" [ngClass]="{ 'selected': selectedLogo === 'noir' }">
+      Logo Noir
+    </button>
   </div>
 
-    <!-- Ajout des logos en bas de la progression -->
-  <div class="logos">
-    <img *ngIf="selectedLogo === 'blanc'" src="assets/logo_blanc.png" alt="Logo Blanc" />
-    <img *ngIf="selectedLogo === 'noir'" src="assets/logo_noir.png" alt="Logo Noir" />
+  <div class="logo-options">
+    <label>
+      <input type="checkbox" [(ngModel)]="addLogoLeft" />
+      Ajouter logo gauche
+    </label>
+    <label>
+      <input type="checkbox" [(ngModel)]="addLogoRight" />
+      Ajouter logo droit
+    </label>
+  </div>
+
+  <button (click)="downloadImages()">Télécharger les images</button>
+  <canvas #canvas></canvas>
+
+  <div *ngIf="loading" class="progress">
+    Progression : {{ progress }} sur {{ totalImages }}
   </div>
 </div>
